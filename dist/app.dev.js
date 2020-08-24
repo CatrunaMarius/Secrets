@@ -11,8 +11,9 @@ var ejs = require("ejs");
 
 var mongoose = require("mongoose");
 
-var md5 = require("md5");
+var bcrypt = require("bcrypt");
 
+var saltRounds = 10;
 var app = express();
 var port = 3000;
 app.use(express["static"]("public"));
@@ -40,24 +41,27 @@ app.get("/register", function (req, res) {
   res.render("register");
 });
 app.post("/register", function (req, res) {
-  // prea info. transmise in register
-  var newUser = new User({
-    email: req.body.username,
-    password: md5(req.body.password)
-  }); // salveaza info. in baza de date
+  bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
+    // Store hash in your password DB.
+    // prea info. transmise in register
+    var newUser = new User({
+      email: req.body.username,
+      password: hash
+    }); // salveaza info. in baza de date
 
-  newUser.save(function (err) {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("secrets");
-    }
+    newUser.save(function (err) {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("secrets");
+      }
+    });
   });
 });
 app.post("/login", function (req, res) {
   // prea informatia trasmisa in capurile cu username si password
   var username = req.body.username;
-  var password = md5(req.body.password); // acestea verifica daca exista persoana cu username si password in baza de data
+  var password = req.body.password; // acestea verifica daca exista persoana cu username si password in baza de data
 
   User.findOne({
     email: username
@@ -66,9 +70,12 @@ app.post("/login", function (req, res) {
       console.log(err);
     } else {
       if (foundUser) {
-        if (foundUser.password === password) {
-          res.render("secrets");
-        }
+        bcrypt.compare(password, foundUser.password, function (err, result) {
+          // result == true
+          if (result === true) {
+            res.render("secrets");
+          }
+        });
       }
     }
   });
