@@ -4,7 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
-const encrypt = require("mongoose-encryption");
+const md5 =require("md5");
 
 const app = express();
 const port = 3000;
@@ -20,9 +20,6 @@ const userSchema = new mongoose.Schema({
     password:String
 });
 
-// encryp
-const secret = process.env.SECRET;
-userSchema.plugin(encrypt, { secret: secret, encryptedFields: ['password']  });
 
 // modelu mongoose
 const User = new mongoose.model("User",userSchema)
@@ -43,7 +40,7 @@ app.post("/register", function(req,res){
     // prea info. transmise in register
     const newUser = new User({
         email: req.body.username,
-        password: req.body.password
+        password: md5(req.body.password)
     })
     // salveaza info. in baza de date
     newUser.save(function(err){
@@ -60,7 +57,7 @@ app.post("/register", function(req,res){
 app.post("/login", function(req, res){
     // prea informatia trasmisa in capurile cu username si password
     const username = req.body.username;
-    const password = req.body.password;
+    const password = md5(req.body.password);
 
     // acestea verifica daca exista persoana cu username si password in baza de data
     User.findOne({email:username}, function(err,foundUser){
