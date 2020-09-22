@@ -1,0 +1,25 @@
+Secret este o aplicatie care pastreaza anonimatul utilizatorulu care isi posteaza secretul
+- aplicatia are o pagina de a te inregistra
+    fie cu un cont google fie varianta clasica
+    (nivelul de securitate find 5)
+-are o pagina de login cu care te poti loga cu 
+    contul de google sau varinata clasica
+
+- odata ce te-ai logat intri in pagina secrets
+    app.get("/secrets") -> Randeaza pagina secreta, 
+        cu toate secretel submise de utilizatori,
+        totusi daca nu esti logat nu poti activa submit
+        daca acesezi pagina de secrets posti vedea doar secretele utiliztorilor
+    app.post("/submit") -> Gaseste  toate secretele submise 
+        de useri si le posteaza sa le vada  toti utilizatori
+    app.get("/submit") -> daca este autetificat randeaza pagina de submit
+        altfel randeaza pagina de login
+
+- functionalitate pagini logout ->app.get("/logout")
+- functionalitate de inregistrare ->app.post("/register")
+    -aceasta prea numele de utilizatori
+    -prea parola de utilizator sub form de *****
+    -daca apare erori va randa din nou pagine de register
+    -daca ne registam cu un cont google/ inregistrare reuseste va renda pagina de secrets
+
+- functionalitate pagini de logini -> app.post("/login")
