@@ -33,7 +33,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //mongoose 
-mongoose.connect("mongodb://localhost:27017/userDB", {
+mongoose.connect("mongodb+srv://Admin-Marius:parola1234@cluster0.q8iwr.gcp.mongodb.net/userDB", {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
