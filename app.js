@@ -12,7 +12,7 @@ const findOrCreate = require('mongoose-findorcreate');
 
 
 const app = express();
-const port = 9000;
+const port = process.env.PORT || 3000;
 
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
@@ -67,7 +67,7 @@ passport.deserializeUser(function (id, done) {
     });
 });
 
-//autentificare cu google
+//autentificare cu google, settings 
 passport.use(new GoogleStrategy({
         clientID: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
@@ -83,11 +83,12 @@ passport.use(new GoogleStrategy({
     }
 ));
 
-
+// render home page
 app.get("/", function (req, res) {
     res.render("home")
 })
 
+// login with google
 app.get("/auth/google",
     passport.authenticate('google', {
         scope: ['profile']
@@ -103,15 +104,17 @@ app.get("/auth/google/secrets",
     });
 
 
-
+// render login page
 app.get("/login", function (req, res) {
     res.render("login")
 })
 
+// rander register page
 app.get("/register", function (req, res) {
     res.render("register")
 })
 
+// reander secrets page if user is loggin in
 app.get("/secrets", function (req, res) {
     User.find({
         "secret": {
@@ -130,6 +133,9 @@ app.get("/secrets", function (req, res) {
     })
 })
 
+
+// if the user is logged in he will render the submit page
+//  if he does not render the login page
 app.get("/submit", function (req, res) {
     if (req.isAuthenticated()) {
         res.render("submit")
@@ -145,6 +151,7 @@ app.post("/submit", function (req, res) {
     // user 
     console.log(req.user.id);
 
+    // check if the user is logged in, if logged in he will post the message on secrets
     User.findById(req.user.id, function (err, foundUser) {
         if (err) {
             console.log(err);
@@ -163,7 +170,7 @@ app.get("/logout", function (req, res) {
     res.redirect("/");
 })
 
-
+// registration form
 app.post("/register", function (req, res) {
 
     User.register({
@@ -184,6 +191,7 @@ app.post("/register", function (req, res) {
 })
 
 
+// retrieves username and password to be authenticated
 app.post("/login", function (req, res) {
 
     const user = new User({
